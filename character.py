@@ -102,4 +102,17 @@ class Character(ABC):
         else:
             self.__range = range
         
+    @property
+    def move(self):
+        return self.__move
     
+    @move.setter
+    def move(self, new_move):
+        if not isinstance(new_move, int):
+            raise TypeError
+        
+        elif new_move <= 0:
+            raise ValueError
+
+        else:
+            self.__move = new_move
