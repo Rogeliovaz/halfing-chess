@@ -22,25 +22,15 @@ class Player(Enum):
     HERO = 1
 
 class Character(ABC):
-    def __init__(self, player: Player, health: int, temp_health:int,
-        attack: int, defense:int, move:int, range: int):
-        
-        if not isinstance(attack, int):
-            raise TypeError
-
-        if attack < 0 or defense < 0:
-            raise ValueError
-        
-        if move <= 0 or range <= 0:
-            raise ValueError
+    def __init__(self, player: Player):
 
         self.__player = player
-        self.__health = health
-        self.__temp_health = temp_health
-        self.__attack = attack
-        self.__defense = defense
-        self.__move = move
-        self.__range = range 
+        self.__health = 5
+        self.__temp_health = 5
+        self.__attack = 3
+        self.__defense = 3
+        self.__move = 3
+        self.__range = 1 
 
     @property
     def player(self):
@@ -61,6 +51,10 @@ class Character(ABC):
     def health(self, new_health: int):
         if not isinstance(new_health, int):
             raise TypeError
+        
+        elif new_health <= 0:
+            raise ValueError
+        
         else:
             self.__health = new_health
     
@@ -87,6 +81,9 @@ class Character(ABC):
         elif len(combat_lst) != 2:
             raise ValueError
         
+        elif combat_lst[0] <= 0 or combat_lst[1] <= 0:
+            raise ValueError
+        
         else:
             self.__attack = combat_lst[0]
             self.__defense = combat_lst[1]
@@ -99,6 +96,8 @@ class Character(ABC):
     def range(self, new_range:int):
         if not isinstance(new_range, int):
             raise TypeError
+        elif new_range <= 0:
+            raise ValueError
         else:
             self.__range = range
         
@@ -110,9 +109,39 @@ class Character(ABC):
     def move(self, new_move):
         if not isinstance(new_move, int):
             raise TypeError
-        
         elif new_move <= 0:
             raise ValueError
-
         else:
             self.__move = new_move
+    
+    @abstractmethod
+    def is_valid_move(self, from_coord: Coord, to_coord: Coord,
+        board: List[List[Union[None, Character]]]) -> bool:
+
+        row_len = len(board)
+        col_len = len(board[0])
+
+        # Check if out of bounds
+        if from_coord.x > row_len or from_coord.y > col_len:
+            if to_coord.x > row_len or to_coord.y > col_len:
+                return False
+                    
+        # Chekcs starting and ending coords are different 
+        if from_coord.x == to_coord.x or from_coord.y == to_coord.y:
+            return False
+        
+        # Checks that self is at starting location
+        if not isinstance(board[from_coord.y][from_coord.x], Character):
+            return False
+
+
+        # Checks ending location is not None
+        if board[to_coord.y][to_coord.x] is not None:
+            return False
+            
+
+    @abstractmethod
+    def is_valid_attack(self, from_coord: Coord, to_coord: Coord,
+        board: List[List[Union[None, Character]]]) -> bool:
+        
+        pass
