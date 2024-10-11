@@ -119,33 +119,52 @@ class Character(ABC):
             self.__move = new_move
     
     @abstractmethod
-    def is_valid_move(self, from_coord: Coord, to_coord: Coord,
-        board: List[List[Union[None, Character]]]) -> bool:
+        def is_valid_move(self, from_coord: Coord, to_coord: Coord,
+                      board: List[List[Union[None, Character]]]) -> bool:
 
-        row_len = len(board)
-        col_len = len(board[0])
+        numOfRows = len(board)
+        numofColumns = len(board[0])
 
         # Check if out of bounds
-        if from_coord.x > row_len or from_coord.y > col_len:
-            if to_coord.x > row_len or to_coord.y > col_len:
+        if from_coord not in range(numOfRows) or to_coord not in range(numOfRows):
+            if from_coord not in range(numofColumns) or to_coord not in range(numofColumns):
                 return False
-                    
-        # Chekcs starting and ending coords are different 
-        if from_coord.x == to_coord.x or from_coord.y == to_coord.y:
+
+        # Chekcs starting and ending coords are different
+        if from_coord == to_coord:
             return False
-        
+
         # Checks that self is at starting location
         if not isinstance(board[from_coord.y][from_coord.x], Character):
             return False
 
-
         # Checks ending location is not None
         if board[to_coord.y][to_coord.x] is not None:
             return False
-            
 
     @abstractmethod
     def is_valid_attack(self, from_coord: Coord, to_coord: Coord,
-        board: List[List[Union[None, Character]]]) -> bool:
-        
-        pass
+                        board: List[List[Union[None, Character]]]) -> bool:
+
+        numOfRows = len(board)
+        numofColumns = len(board[0])
+
+        # Check if out of bounds
+        if from_coord not in range(numOfRows) or to_coord not in range(numOfRows):
+            if from_coord not in range(numofColumns) or to_coord not in range(numofColumns):
+                return False
+
+        # Chekcs starting and ending coords are different
+        if from_coord == to_coord:
+            return False
+
+        # Checks that self is at starting location
+        if not isinstance(board[from_coord.y][from_coord.x], Character):
+            return False
+
+        # Checks ending location is not None
+        if board[to_coord.y][to_coord.x] is None:
+            return False
+
+    def calculate_dice(self, attack = True, lst: List = [], *args, **kwargs):
+            pass
