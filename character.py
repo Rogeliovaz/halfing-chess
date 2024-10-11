@@ -11,6 +11,7 @@ class CharacterDeath(Exception):
 
     def __init__(self, msg, char: Character):
         self.message = msg
+        char.temp_health = 0
 
 
 class InvalidAttack(Exception):
@@ -39,7 +40,7 @@ class Character(ABC):
     @player.setter
     def player(self, player_type: Player):
         if not isinstance(player_type, Player):
-            return TypeError
+            raise TypeError
         else:
             self.__player = player_type
     
@@ -66,6 +67,9 @@ class Character(ABC):
     def temp_health(self, new_health: int):
         if not isinstance(new_health, int):
             raise TypeError
+        if new_health <=0:
+            self.__temp_health = 0
+            raise CharacterDeath(f'{self.__player} has died!', self)
         else:
             self.__temp_health = new_health
 
