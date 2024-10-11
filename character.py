@@ -69,7 +69,7 @@ class Character(ABC):
             raise TypeError
         if new_health <=0:
             self.__temp_health = 0
-            raise CharacterDeath(f'{self.__player} has died!', self)
+            raise CharacterDeath(f'{self.__player} has died!',Character(self.__player))
         else:
             self.__temp_health = new_health
 
