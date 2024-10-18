@@ -117,12 +117,18 @@ class TestCharacter(unittest.TestCase):
     def testEndPoint(self):
         pass
 
-    def testIs_Valid_attack(self):
+    def test_is_valid_attack_good_start(self):
         from_coord = Coord(0, 0)
         to_coord = Coord(1, 1)
         self.board[0][0] = self.hero  # placing a hero at from_coord
         self.board[1][1] = self.villain  # placing a villain at to_coord
         self.assertTrue(self.hero.is_valid_attack(from_coord))
+        from_coord2 = Coord(2, 3)
+        to_coord2 = Coord(1, 1)
+        self.board[0][0] = self.hero  # placing a hero at from_coord
+        self.board[1][1] = self.villain  # placing a villain at to_coord
+        self.assertTrue(self.hero.is_valid_attack(from_coord2))
 
+    
 
 

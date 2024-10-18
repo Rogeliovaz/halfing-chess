@@ -225,16 +225,18 @@ class Character(ABC):
             return False
 
         # Ensure the start and end coordinates are different
-        if from_coord == to_coord:
+        elif (from_coord.x == to_coord.x) or (from_coord.y == to_coord.y):
             return False
 
         # Ensure the start location contains self (attacking character)
-        if board[from_coord.y][from_coord.x] is not self:
+        elif board[from_coord.y][from_coord.x] == None:
             return False
 
         # Ensure the end location contains a valid target (not None)
-        if board[to_coord.y][to_coord.x] is None:
+        elif board[to_coord.y][to_coord.x] == None:
             return False
+
+
         return True
 
     def calculate_dice(self, attack=True, lst: List = [], *args, **kwargs) -> int:
@@ -260,8 +262,8 @@ class Character(ABC):
             dice_rolls = [randint(1, threshold) for _ in range(stat_value)]
 
         # Count the number of rolls that meet or exceed the threshold
-        sucessfull_rolls = sum(1 for roll in dice_rolls if roll >= threshold)
-        return sucessfull_rolls
+        sucessful_rolls = sum(1 for roll in dice_rolls if roll >= threshold)
+        return sucessful_rolls
 
     def deal_damage(self, target: Character, damage: int, *args, **kwargs) -> None:
         """
