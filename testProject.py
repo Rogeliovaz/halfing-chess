@@ -1,5 +1,6 @@
 import unittest
 from character import Character, CharacterDeath,Player
+from creatures import Villain
 from coord import Coord
 
 
@@ -124,5 +125,18 @@ class TestCharacter(unittest.TestCase):
         self.board[1][1] = self.villain  # placing a villain at to_coord
         self.assertTrue(self.hero.is_valid_attack(from_coord))
 
+class TestVillain(unittest.TestCase):
+    class JoeVillain(Villain):
+        def __init__(self, player):
+            super().__init__(player)
+        
+        def is_valid_move(self, from_coord, to_coord, board):
+            return super().is_valid_move(from_coord, to_coord, board)
 
+        def is_valid_attack(self, from_coord, to_coord, board):
+            return super().is_valid_attack(from_coord, to_coord, board)
 
+    def setUp(self):
+        # Reset the board and create a villain instance
+        self.board = [[None for _ in range(6)] for _ in range(6)]
+        self.villain = self.JoeVillain(Player.VILLAIN)

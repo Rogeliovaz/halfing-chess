@@ -193,11 +193,11 @@ class Character(ABC):
             return False
 
         # Ensure that self is at the starting location
-        if board[from_coord.y][from_coord.x] is not self:
+        if board[from_coord.x][from_coord.y] is not self:
             return False
 
         # Ensure that the ending location is empty (does not contain another character)
-        if board[to_coord.y][to_coord.x] is not None:
+        if board[to_coord.x][to_coord.y] is not None:
             return False
 
         return True
@@ -216,27 +216,28 @@ class Character(ABC):
         Returns:
             bool: True if the attack is valid, False otherwise.
         """
-        num_of_rows = len(board)
-        num_of_colums = len(board[0])
 
-        # Check if start and end coordinates are within bounds
-        if not (0 <= from_coord.x < num_of_colums and 0 <= from_coord.y < num_of_rows
-                and 0 <= to_coord.x < num_of_colums and 0 <= to_coord.y < num_of_rows):
+        num_rows = len(board)
+        num_columns = len(board[0])
+        
+        # Verifies indices associated with move are within bounds
+        if not (0 <= from_coord.x < num_rows and 0 <= from_coord.y < num_columns
+                and 0 <= to_coord.x < num_rows and 0 <= to_coord.y < num_columns):
             return False
 
-        # Ensure the start and end coordinates are different
-        if from_coord == to_coord:
+        # Verifies starting and ending locations are different
+        if from_coord.x == to_coord.x and from_coord.y == to_coord.y:
             return False
 
-        # Ensure the start location contains self (attacking character)
-        if board[from_coord.y][from_coord.x] is not self:
+        # Verifies that selected piece is located at starting location
+        if board[from_coord.x][from_coord.y] != self:
+            return False
+        
+        if board[to_coord.x][to_coord.y] == None: 
             return False
 
-        # Ensure the end location contains a valid target (not None)
-        if board[to_coord.y][to_coord.x] is None:
-            return False
         return True
-
+    
     def calculate_dice(self, attack=True, lst: List = [], *args, **kwargs) -> int:
         """
         Calculates the result of dice rolls for attack or defense
