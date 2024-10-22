@@ -123,12 +123,13 @@ class TestCharacter(unittest.TestCase):
         self.board[0][0] = self.hero  # placing a hero at from_coord
         self.board[1][1] = self.villain  # placing a villain at to_coord
         self.assertTrue(self.hero.is_valid_attack(from_coord))
+
         from_coord2 = Coord(2, 3)
         to_coord2 = Coord(1, 1)
         self.board[0][0] = self.hero  # placing a hero at from_coord
         self.board[1][1] = self.villain  # placing a villain at to_coord
         self.assertTrue(self.hero.is_valid_attack(from_coord2))
 
-    
+
 
 

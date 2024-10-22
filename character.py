@@ -4,7 +4,9 @@ from typing import Optional, Union, List
 from enum import Enum
 from random import randint
 from coord import Coord
-#from item import Potion
+
+
+# from item import Potion
 
 
 class CharacterDeath(Exception):
@@ -23,6 +25,7 @@ class CharacterDeath(Exception):
         self.message = msg
         char.temp_health = 0
 
+
 class InvalidAttack(Exception):
     """
     Custom exception for invaild attacks.
@@ -36,6 +39,8 @@ class Player(Enum):
     """
     VILLAIN = 0
     HERO = 1
+
+
 class Character(ABC):
     """
         Abstract base class for all character. Each character has stats such as health, attack, defense, move, and range,
@@ -193,11 +198,11 @@ class Character(ABC):
             return False
 
         # Ensure that self is at the starting location
-        if board[from_coord.y][from_coord.x] is not self:
+        if board[from_coord.x][from_coord.y] is not self:
             return False
 
         # Ensure that the ending location is empty (does not contain another character)
-        if board[to_coord.y][to_coord.x] is not None:
+        if board[to_coord.x][to_coord.y] is not None:
             return False
 
         return True
@@ -216,26 +221,25 @@ class Character(ABC):
         Returns:
             bool: True if the attack is valid, False otherwise.
         """
-        num_of_rows = len(board)
-        num_of_colums = len(board[0])
 
-        # Check if start and end coordinates are within bounds
-        if not (0 <= from_coord.x < num_of_colums and 0 <= from_coord.y < num_of_rows
-                and 0 <= to_coord.x < num_of_colums and 0 <= to_coord.y < num_of_rows):
+        num_rows = len(board)
+        num_columns = len(board[0])
+
+        # Verifies indices associated with move are within bounds
+        if not (0 <= from_coord.x < num_rows and 0 <= from_coord.y < num_columns
+                and 0 <= to_coord.x < num_rows and 0 <= to_coord.y < num_columns):
             return False
 
-        # Ensure the start and end coordinates are different
-        elif (from_coord.x == to_coord.x) or (from_coord.y == to_coord.y):
+        # Verifies starting and ending locations are different
+        if from_coord.x == to_coord.x and from_coord.y == to_coord.y:
             return False
 
-        # Ensure the start location contains self (attacking character)
-        elif board[from_coord.y][from_coord.x] == None:
+        # Verifies that selected piece is located at starting location
+        if board[from_coord.x][from_coord.y] != self:
             return False
 
-        # Ensure the end location contains a valid target (not None)
-        elif board[to_coord.y][to_coord.x] == None:
+        if board[to_coord.x][to_coord.y] == None:
             return False
-
 
         return True
 
@@ -262,8 +266,8 @@ class Character(ABC):
             dice_rolls = [randint(1, threshold) for _ in range(stat_value)]
 
         # Count the number of rolls that meet or exceed the threshold
-        sucessful_rolls = sum(1 for roll in dice_rolls if roll >= threshold)
-        return sucessful_rolls
+        sucessfull_rolls = sum(1 for roll in dice_rolls if roll >= threshold)
+        return sucessfull_rolls
 
     def deal_damage(self, target: Character, damage: int, *args, **kwargs) -> None:
         """
@@ -271,7 +275,7 @@ class Character(ABC):
         and checks if the target character has died
 
         Args:
-            target (Character): The target character to receive damage.            
+            target (Character): The target character to receive damage.
             damage (int) : the amount of damage to be dealt.
         """
         try:
