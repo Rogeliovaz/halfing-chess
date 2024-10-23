@@ -1,6 +1,6 @@
 import unittest
 from character import Character, CharacterDeath,Player
-from creatures import Villain
+from creatures import Villain, Goblin, Skeleton, Necromancer
 from coord import Coord
 
 
@@ -126,17 +126,91 @@ class TestCharacter(unittest.TestCase):
         self.assertTrue(self.hero.is_valid_attack(from_coord))
 
 class TestVillain(unittest.TestCase):
-    class JoeVillain(Villain):
-        def __init__(self, player):
-            super().__init__(player)
-        
-        def is_valid_move(self, from_coord, to_coord, board):
-            return super().is_valid_move(from_coord, to_coord, board)
-
-        def is_valid_attack(self, from_coord, to_coord, board):
-            return super().is_valid_attack(from_coord, to_coord, board)
-
     def setUp(self):
-        # Reset the board and create a villain instance
+        self.villain = Villain()
+        self.goblin = Goblin()
+        self.skeleton = Skeleton()
+        self.necromancer = Necromancer()
         self.board = [[None for _ in range(6)] for _ in range(6)]
-        self.villain = self.JoeVillain(Player.VILLAIN)
+    
+    def reset_board(self):
+        self.board = [[None for _ in range(6)] for _ in range(6)]
+
+    def board_state(self):
+        print("Board State:")
+        for row in self.board:
+            print(row)
+
+    def test_init(self):
+       #Test that the character initializes with the correct default values
+        self.assertEqual(self.villain.player, Player.VILLAIN)
+        self.assertEqual(self.villain.health, 5)
+        self.assertEqual(self.villain.temp_health, 5)
+        self.assertEqual(self.villain.combat, [3, 3])
+        self.assertEqual(self.villain.move, 3)
+        self.assertEqual(self.villain.range, 1)
+
+    def test_diagonal_movement_v1(self):
+        # Test diagonal movement 
+        from_coord = Coord(0, 0)
+        to_coord = Coord(1, 1)
+        self.assertFalse(self.villain.is_valid_move(from_coord, to_coord, self.board), "diagonal_movement FAILED")
+    
+
+    def test_out_of_movement_range(self):
+        self.board[0][0] = self.villain 
+        from_coord = Coord(0, 0)
+        to_coord = Coord(5, 0)
+        self.assertFalse(self.villain.is_valid_move(from_coord, to_coord, self.board), "t_out_movement_range FAILED")
+
+    def test_horizontal_movement(self):
+        self.reset_board()
+        self.board_state
+        self.board[0][0] = self.villain
+        from_coord = Coord(0, 0)
+        to_coord = Coord(0, 0)
+
+
+    def test_horiz_movement_obstacle(self):
+        pass
+
+    def  test_vertical_movement(self):
+        pass
+
+    def test_vert_movement_obstacle(self):
+        pass
+    
+    def is_valid_move_true(self):
+
+        self.board[0][0] = self.villain 
+        from_coord = Coord(0, 0)
+        to_coord = Coord(2, 0)
+        self.assertTrue(self.villain.is_valid_move(from_coord, to_coord, self.board), "is_valid_move_true FAILED")
+
+    def test_goblin_init(self):
+        #Test that the character initializes with the correct default values
+        self.assertEqual(self.goblin.player, Player.VILLAIN)
+        self.assertEqual(self.goblin.health, 3)
+        self.assertEqual(self.goblin.temp_health, 3)
+        self.assertEqual(self.goblin.combat, [2, 2])
+       
+
+    def test_skeleton_init(self):
+        #Test that the character initializes with the correct default values
+        self.assertEqual(self.skeleton.player, Player.VILLAIN)
+        self.assertEqual(self.skeleton.health, 2)
+        self.assertEqual(self.skeleton.temp_health, 2)
+        self.assertEqual(self.skeleton.combat, [2, 1])
+        self.assertEqual(self.skeleton.move, 2)
+
+    def test_necromancer_init(self):
+        #Test that the character initializes with the correct default values
+        self.assertEqual(self.necromancer.player, Player.VILLAIN)
+        self.assertEqual(self.necromancer.range, 3)
+        self.assertEqual(self.necromancer.combat, [1, 2])
+
+    def test_necromancer_raise_dead(self):
+        pass
+
+    def all_villain_types_bad_data(self):
+        pass
