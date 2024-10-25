@@ -1,7 +1,7 @@
 import unittest
 from character import Character, CharacterDeath,Player
 from coord import Coord
-from creatures import Villain, Goblin, Skeleton, Necromancer, Hero, Warrior, Mage, Paladin, Ranger
+from creatures import Villain, Goblin, Skeleton, Necromancer, Hero, Warrior, Mage,Paladin, Ranger
 
 
 class TestCharacter(unittest.TestCase):
