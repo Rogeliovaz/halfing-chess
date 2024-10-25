@@ -151,7 +151,7 @@ class Warrior(Hero):
         
         # Checks if target is type Goblin
         if isinstance(target, Goblin):
-            # If tgob is empty, roll two dice 
+            # If gob is empty, roll two dice
             if not gob:
                 # Roll two additional dice and append to 'lst'
                 gob_roll_1 = super().calculate_dice(attack, lst)
