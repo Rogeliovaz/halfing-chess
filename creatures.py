@@ -1,10 +1,3 @@
-from typing import List, Union
-from character import Character
-from abc import ABC, abstractmethod
-from coord import Coord
-from character import Character
-
-import unittest
 from character import Character, CharacterDeath, Player
 from coord import Coord
 from typing import Optional, Union, List
@@ -75,6 +68,7 @@ class Villain(Character):
         return super().is_valid_attack(from_coord, to_coord, board)
 
 
+
 class Goblin(Villain):
     def __init__(self):
         super().__init__()
@@ -111,19 +105,21 @@ class Necromancer(Villain):
             board (List[List[Union[None, Character]]]): The game board with characters placed
         """
         # Calculates the distance in order to check if the target is in range
-        distance = abs(from_coords.x - to_coords.x) + abs(from_coords.y - to_coords.y)
+        x_move = abs(to_coords.x - from_coords.x)
+        y_move = abs(to_coords.y - from_coords.y)
 
-        # Check if the target is within range
-        if distance > self.range:
-            return
-            # Check if the target's health is 0
-        if target.health != 0:
-            return
-
-            # If the target is not a VILLAIN player type, convert the player into the VILLAIN player type
+        # Check if move is in range
+        if x_move > self.range or y_move > self.range:
+            return None
+        
+        # Checks if the target is not a Villain type, then sets its 
         if target.player != Player.VILLAIN:
             target.player = Player.VILLAIN
-
+        
+        # Checks temp health 
+        if target.temp_health > 0:
+            return None
+        
         # Det the target's temp_health to half its health, rounded down
         target.temp_health = target.health // 2
 
@@ -132,18 +128,61 @@ class Hero(Character):
     def __init__(self):
         super().__init__(Player.HERO)
 
+    def is_valid_move(self, from_coord: Coord, to_coord: Coord,board):
+        return super().is_valid_move(from_coord, to_coord, board)
 
-class Warrior:
-    pass
+    def is_valid_attack(self, from_coord, to_coord, board):
+        return super().is_valid_attack(from_coord, to_coord, board)
+    
+    def calculate_dice(self, attack=True, lst: list = [], *args, **kwargs) -> int:
+        return super().calculate_dice(attack, lst, *args, **kwargs)
+    
+    def deal_damage(self, target, damage, *args, **kwargs):
+        return super().deal_damage(target, damage, *args, **kwargs)
+    
+class Warrior(Hero):
+    def __init__(self):
+        super().__init__()    
+        self.health = 7
+        self.temp_health = 7
+        self.combat = [2, 4]
+    
+    def calculate_dice(self, target: Character, attack=True, lst: list = [], gob: list = []):
+        
+        # Checks if target is type Goblin
+        if isinstance(target, Goblin):
+            # If tgob is empty, roll two dice 
+            if not gob:
+                # Roll two additional dice and append to 'lst'
+                gob_roll_1 = super().calculate_dice(attack, lst)
+                gob_roll_2 = super().calculate_dice(attack, lst)
+                lst.extend([gob_roll_1, gob_roll_2])
+            else:
+                lst.extend(gob)
+
+        # Call the base method to handle other cases
+        return super().calculate_dice(attack, lst)
 
 
-class Mage:
-    pass
+class Mage(Hero):
+    def __init__(self):
+        self.combat = [2,2]
+        self.range = 2
+        self.move = 2
+    
+    def deal_damage(self, target, damage, *args, **kwargs):
+        pass
 
 
-class Paladin:
-    pass
+class Paladin(Hero):
+    def __init__(self, heal:bool):
+        self.health = 6
+        self.temp_health = 6
+        self.__heal = heal
+
+    
 
 
-class Ranger:
-    pass
+class Ranger(Hero):
+    def __init__(self):
+        self.range = 3
