@@ -149,35 +149,38 @@ class Warrior(Hero):
         self.temp_health = 7
         self.combat = [2, 4]
 
+    class Warrior(Hero):
+        def __init__(self):
+            super().__init__()
+            self.health = 7
+            self.temp_health = 7
+            self.combat = [2, 4]
+
     def calculate_dice(self, target: Character, attack=True, lst: list = [], gob: list = []):
-        # Default lst and gob to empty lists if None
-       super().calculate_dice(target=target, attack=attack, lst=lst)
-       if lst is None:
-           lst = []
-       if gob is None:
-           gob = []
+        super().calculate_dice(target=target, attack=attack, lst=lst)
+        sucessfull_rolls = 0
+        # Checks gob is empty appends 2 dice rools to gob lst
+        if attack:
+            threshold = 5
+        else:
+            threshold = 4
 
-       threshold = 4 if attack else 3
-       stat_value = self.__attack if attack else self.__defense
+        stat_value = self.combat[0] if attack else self.combat[1]
 
+        # Use provided dice rolls if available, otherwise generate random dice rolls
+        dice_rolls = lst[:stat_value]
+        dice_rolls.extend([randint(1, 6)])
 
-       if lst:
-            dice_rolls = lst
-       else:
-            dice_rolls = [randint(1, threshold) for _ in range(stat_value)]
-
-       sucessfull_rolls = sum(1 for roll in dice_rolls if roll >= threshold)
-
-       if isinstance(attack, Goblin):
+        if attack and isinstance(target, Goblin):
             self.combat[0] += 2
+            if not gob:
+                dice_rolls.extend(randint(1, 6), randint(1, 6))
 
-       if gob:
-            if target == Goblin:
-                extra_roll1 = randint(1, 6)
-                extra_roll2 = randint(1, 6)
-                gob.append(extra_roll1, extra_roll2)
+        for num in dice_rolls:
+            if num >= threshold:
+                sucessfull_rolls += 1
 
-       return sucessfull_rolls
+        return sucessfull_rolls
 
 
 class Mage(Hero):
