@@ -255,15 +255,16 @@ class Character(ABC):
             int: The number of successful rolls (above the threshold)
         """
 
-        # Using self.__attack if attack = True, otherwise self.__defense
-        threshold = 4 if attack else 3
-        stat_value = self.__attack if attack else self.__defense
+        if attack:
+            threshold = 5
+        else:
+            threshold = 4
+
+        stat_value = self.combat[0] if attack else self.combat[1]
 
         # Use provided dice rolls if available, otherwise generate random dice rolls
-        if lst:
-            dice_rolls = lst
-        else:
-            dice_rolls = [randint(1, threshold) for _ in range(stat_value)]
+        dice_rolls = lst[:stat_value]
+        dice_rolls = dice_rolls.extend(randint(1, 6))
 
         # Count the number of rolls that meet or exceed the threshold
         sucessfull_rolls = sum(1 for roll in dice_rolls if roll >= threshold)

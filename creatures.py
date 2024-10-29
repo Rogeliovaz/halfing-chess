@@ -1,6 +1,7 @@
-from character import Character, CharacterDeath, Player
+from typing import Union, List
+from character import Character, Player
 from coord import Coord
-from typing import Optional, Union, List
+from random import randint
 
 
 class Villain(Character):
@@ -139,50 +140,101 @@ class Hero(Character):
     
     def deal_damage(self, target, damage, *args, **kwargs):
         return super().deal_damage(target, damage, *args, **kwargs)
-    
+
+
 class Warrior(Hero):
     def __init__(self):
-        super().__init__()    
+        super().__init__()
         self.health = 7
         self.temp_health = 7
         self.combat = [2, 4]
-    
-    def calculate_dice(self, target: Character, attack=True, lst: list = [], gob: list = []):
-        
-        # Checks if target is type Goblin
-        if isinstance(target, Goblin):
-            # If gob is empty, roll two dice
-            if not gob:
-                # Roll two additional dice and append to 'lst'
-                gob_roll_1 = super().calculate_dice(attack, lst)
-                gob_roll_2 = super().calculate_dice(attack, lst)
-                lst.extend([gob_roll_1, gob_roll_2])
-            else:
-                lst.extend(gob)
 
-        # Call the base method to handle other cases
-        return super().calculate_dice(attack, lst)
+    def calculate_dice(self, target: Character, attack=True, lst: list = [], gob: list = []):
+        # Default lst and gob to empty lists if None
+       super().calculate_dice(target=target, attack=attack, lst=lst)
+       if lst is None:
+           lst = []
+       if gob is None:
+           gob = []
+
+       threshold = 4 if attack else 3
+       stat_value = self.__attack if attack else self.__defense
+
+
+       if lst:
+            dice_rolls = lst
+       else:
+            dice_rolls = [randint(1, threshold) for _ in range(stat_value)]
+
+       sucessfull_rolls = sum(1 for roll in dice_rolls if roll >= threshold)
+
+       if isinstance(attack, Goblin):
+            self.combat[0] += 2
+
+       if gob:
+            if target == Goblin:
+                extra_roll1 = randint(1, 6)
+                extra_roll2 = randint(1, 6)
+                gob.append(extra_roll1, extra_roll2)
+
+       return sucessfull_rolls
 
 
 class Mage(Hero):
     def __init__(self):
-        self.combat = [2,2]
-        self.range = 2
+        super().__init__()
+        self.combat = [2, 2]
+        self.range = 3
         self.move = 2
-    
+
     def deal_damage(self, target, damage, *args, **kwargs):
-        pass
+        return super().deal_damage(target, damage=damage + 1, *args, **kwargs)
 
 
 class Paladin(Hero):
-    def __init__(self, heal:bool):
+    def __init__(self):
+        super().__init__()
         self.health = 6
         self.temp_health = 6
-        self.__heal = heal
+        self.__heal = True
 
-    
+    @property
+    def heal(self):
+        return self.__heal
+
+    @heal.setter
+    def heal(self, healed):
+        if isinstance(healed, bool):
+            self.__heal = healed
+        else:
+            raise TypeError("healed must be bool")
+
+    def revive(self, target: Character, from_coord: Coord, to_coord: Coord, board: List[List[Union[None, Character]]]):
+        if not self.heal:
+            return None
+
+        x_move = abs(to_coord.x - from_coord.x)
+        y_move = abs(to_coord.y - from_coord.y)
+
+        # Check if move is out of range
+        if x_move > self.range or y_move > self.range:
+            return None
+
+        if target.temp_health == 0:
+            target.temp_health = target.health // 2
+
+        self.heal = False
 
 
 class Ranger(Hero):
     def __init__(self):
+        super().__init__()
         self.range = 3
+
+    def deal_damage(self, target: Character, damage: int):
+        if isinstance(target, Skeleton):
+            super().deal_damage(target, damage - 1)
+            if damage <= 0:
+                self.temp_health = 0
+        else:
+            super().deal_damage(target, damage)

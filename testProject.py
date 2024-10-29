@@ -2,7 +2,7 @@ import unittest
 from character import Character, CharacterDeath,Player
 from coord import Coord
 from creatures import Villain, Goblin, Skeleton, Necromancer, Hero, Warrior, Mage,Paladin, Ranger
-
+from dungeon import Dungeon
 
 class TestCharacter(unittest.TestCase):
 
@@ -255,5 +255,35 @@ class TestHero(unittest.TestCase):
     def test_calculate_dice(self):
         self.assertTrue(self.warrior.calculate_dice)
 
+class test_dungeon(unittest.TestCase):
+    def test_dungeon_initialization_valid(self):
+        # Test valid dungeon creation
+        dungeon = Dungeon(6, 8)
+        self.assertEqual(dungeon._Dungeon__height, 6)
+        self.assertEqual(dungeon._Dungeon__width, 8)
+        self.assertEqual(len(dungeon._Dungeon__board), 6)
+        self.assertEqual(len(dungeon._Dungeon__board[0]), 8)
 
+    def test_dungeon_initialization_invalid_dimensions(self):
+        # Test invalid dungeon dimensions
+        with self.assertRaises(ValueError):
+            Dungeon(3, 8)  # Invalid height
+        with self.assertRaises(ValueError):
+            Dungeon(6, 13)  # Invalid width
 
+    def test_board_initialization(self):
+        # Test if the board is initialized with None values
+        dungeon = Dungeon(5, 5)
+        for row in dungeon._Dungeon__board:
+            self.assertTrue(all(cell is None for cell in row))
+
+    def test_heroes_initialization(self):
+        # Test if heroes are initialized in the correct order
+        dungeon = Dungeon(6, 8)
+        self.assertIsInstance(dungeon._Dungeon__heroes[0], Warrior)
+        self.assertIsInstance(dungeon._Dungeon__heroes[1], Mage)
+        self.assertIsInstance(dungeon._Dungeon__heroes[2], Paladin)
+        self.assertIsInstance(dungeon._Dungeon__heroes[3], Ranger)
+        # Test if Paladin's heal attribute is set to True initially
+        paladin = dungeon._Dungeon__heroes[2]
+        self.assertTrue(paladin.heal)
