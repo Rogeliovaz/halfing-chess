@@ -69,7 +69,6 @@ class Villain(Character):
         return super().is_valid_attack(from_coord, to_coord, board)
 
 
-
 class Goblin(Villain):
     def __init__(self):
         super().__init__()
@@ -112,15 +111,15 @@ class Necromancer(Villain):
         # Check if move is in range
         if x_move > self.range or y_move > self.range:
             return None
-        
-        # Checks if the target is not a Villain type, then sets its 
+
+        # Checks if the target is not a Villain type, then sets its
         if target.player != Player.VILLAIN:
             target.player = Player.VILLAIN
-        
-        # Checks temp health 
+
+        # Checks temp health
         if target.temp_health > 0:
             return None
-        
+
         # Det the target's temp_health to half its health, rounded down
         target.temp_health = target.health // 2
 
@@ -129,15 +128,15 @@ class Hero(Character):
     def __init__(self):
         super().__init__(Player.HERO)
 
-    def is_valid_move(self, from_coord: Coord, to_coord: Coord,board):
+    def is_valid_move(self, from_coord: Coord, to_coord: Coord, board):
         return super().is_valid_move(from_coord, to_coord, board)
 
     def is_valid_attack(self, from_coord, to_coord, board):
         return super().is_valid_attack(from_coord, to_coord, board)
-    
+
     def calculate_dice(self, attack=True, lst: list = [], *args, **kwargs) -> int:
         return super().calculate_dice(attack, lst, *args, **kwargs)
-    
+
     def deal_damage(self, target, damage, *args, **kwargs):
         return super().deal_damage(target, damage, *args, **kwargs)
 
@@ -149,38 +148,31 @@ class Warrior(Hero):
         self.temp_health = 7
         self.combat = [2, 4]
 
-    class Warrior(Hero):
-        def __init__(self):
-            super().__init__()
-            self.health = 7
-            self.temp_health = 7
-            self.combat = [2, 4]
-
     def calculate_dice(self, target: Character, attack=True, lst: list = [], gob: list = []):
         super().calculate_dice(target=target, attack=attack, lst=lst)
-        sucessfull_rolls = 0
-        # Checks gob is empty appends 2 dice rools to gob lst
+        # Using self.__attack if attack = True, otherwise self.__defense
         if attack:
+            dice_value = self.combat[0]
             threshold = 5
         else:
+            dice_value = self.combat[1]
             threshold = 4
 
-        stat_value = self.combat[0] if attack else self.combat[1]
-
         # Use provided dice rolls if available, otherwise generate random dice rolls
-        dice_rolls = lst[:stat_value]
+        dice_rolls = lst[:dice_value]
         dice_rolls.extend([randint(1, 6)])
 
         if attack and isinstance(target, Goblin):
             self.combat[0] += 2
             if not gob:
-                dice_rolls.extend(randint(1, 6), randint(1, 6))
+                dice_rolls.extend([randint(1, 6), randint(1, 6)])
 
+        successfull_rolls = 0
         for num in dice_rolls:
             if num >= threshold:
-                sucessfull_rolls += 1
+                successfull_rolls += 1
 
-        return sucessfull_rolls
+        return successfull_rolls
 
 
 class Mage(Hero):
